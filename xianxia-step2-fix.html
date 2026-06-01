@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>玄門傳 — 專案初始化預覽</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --ink: #1a0a00;
+    --gold: #c8922a;
+    --gold2: #f0c060;
+    --jade: #4a9e6b;
+    --bg: #0d0800;
+    --panel: #1c1008;
+    --border: #5a3a10;
+    --pixel: "Courier New", monospace;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--gold2);
+    font-family: var(--pixel);
+    min-height: 100vh;
+    overflow-x: hidden;
+    image-rendering: pixelated;
+  }
+
+  /* 像素星空背景 */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 10% 15%, #fff8 0%, transparent 100%),
+      radial-gradient(1px 1px at 25% 40%, #fff6 0%, transparent 100%),
+      radial-gradient(1px 1px at 50% 20%, #fff9 0%, transparent 100%),
+      radial-gradient(1px 1px at 70% 60%, #fff5 0%, transparent 100%),
+      radial-gradient(1px 1px at 85% 30%, #fff8 0%, transparent 100%),
+      radial-gradient(1px 1px at 40% 70%, #fff6 0%, transparent 100%),
+      radial-gradient(1px 1px at 60% 85%, #fff7 0%, transparent 100%),
+      radial-gradient(1px 1px at 90% 10%, #fff9 0%, transparent 100%),
+      radial-gradient(1px 1px at 15% 80%, #fff5 0%, transparent 100%),
+      radial-gradient(1px 1px at 75% 45%, #fff6 0%, transparent 100%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 24px 16px;
+  }
+
+  /* 像素邊框 mixin */
+  .pixel-border {
+    border: 3px solid var(--border);
+    box-shadow:
+      inset 0 0 0 1px #2a1800,
+      0 0 0 1px #000,
+      4px 4px 0 #000;
+    background: var(--panel);
+  }
+
+  /* ========== 標題區 ========== */
+  .title-section {
+    text-align: center;
+    padding: 32px 0 24px;
+  }
+
+  .game-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 48px;
+    font-weight: 700;
+    color: var(--gold2);
+    text-shadow:
+      2px 0 0 var(--gold),
+      -2px 0 0 var(--gold),
+      0 2px 0 #5a2a00,
+      0 -2px 0 #5a2a00,
+      3px 3px 0 #000;
+    letter-spacing: 8px;
+    animation: titlePulse 3s ease-in-out infinite;
+  }
+
+  @keyframes titlePulse {
+    0%, 100% { text-shadow: 2px 0 0 var(--gold), -2px 0 0 var(--gold), 0 2px 0 #5a2a00, 0 -2px 0 #5a2a00, 3px 3px 0 #000; }
+    50% { text-shadow: 2px 0 0 var(--gold2), -2px 0 0 var(--gold2), 0 2px 0 #8a4a00, 0 -2px 0 #8a4a00, 3px 3px 0 #000, 0 0 20px #c8922a88; }
+  }
+
+  .game-subtitle {
+    font-size: 12px;
+    color: #8a6030;
+    letter-spacing: 4px;
+    margin-top: 8px;
+  }
+
+  /* ========== 像素分隔線 ========== */
+  .pixel-divider {
+    height: 4px;
+    background: repeating-linear-gradient(
+      90deg,
+      var(--gold) 0px, var(--gold) 8px,
+      transparent 8px, transparent 16px
+    );
+    margin: 16px 0;
+    opacity: 0.4;
+  }
+
+  /* ========== 專案結構區 ========== */
+  .structure-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 24px 0;
+  }
+
+  @media (max-width: 600px) {
+    .structure-grid { grid-template-columns: 1fr; }
+    .game-title { font-size: 32px; }
+  }
+
+  .panel {
+    padding: 16px;
+  }
+
+  .panel-title {
+    font-size: 11px;
+    color: var(--gold);
+    letter-spacing: 3px;
+    margin-bottom: 12px;
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 6px;
+  }
+
+  /* 檔案樹 */
+  .file-tree {
+    font-size: 11px;
+    line-height: 2;
+    color: #c8a060;
+  }
+
+  .file-tree .folder {
+    color: var(--gold2);
+  }
+
+  .file-tree .file {
+    color: #8ab080;
+    padding-left: 16px;
+  }
+
+  .file-tree .file::before {
+    content: '├ ';
+    color: #5a3a10;
+  }
+
+  .file-tree .comment {
+    color: #5a4020;
+    font-size: 10px;
+  }
+
+  /* 指令區 */
+  .cmd-block {
+    background: #080400;
+    border: 2px solid #2a1800;
+    padding: 12px;
+    font-size: 11px;
+    line-height: 2;
+    margin-bottom: 8px;
+  }
+
+  .cmd-line { color: #4adf80; }
+  .cmd-comment { color: #4a6040; }
+  .cmd-highlight { color: var(--gold2); }
+
+  /* ========== 場景預覽 ========== */
+  .scene-preview {
+    margin: 24px 0;
+  }
+
+  .scene-canvas {
+    width: 100%;
+    aspect-ratio: 16/9;
+    background: #040208;
+    border: 3px solid var(--border);
+    box-shadow: 4px 4px 0 #000;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* 像素地圖預覽 */
+  .pixel-map {
+    display: grid;
+    grid-template-columns: repeat(20, 1fr);
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    inset: 0;
+    opacity: 0.6;
+  }
+
+  .tile {
+    aspect-ratio: 1;
+    image-rendering: pixelated;
+  }
+
+  .tile-grass { background: #1a3a18; }
+  .tile-stone { background: #303030; }
+  .tile-water { background: #0a1a40; animation: waterAnim 2s steps(2) infinite; }
+  .tile-cloud { background: #c0d8f0; }
+  .tile-dark  { background: #0d0a04; }
+  .tile-path  { background: #4a3010; }
+  .tile-build { background: #5a1a10; }
+
+  @keyframes waterAnim {
+    0% { background: #0a1a40; }
+    50% { background: #0a2050; }
+  }
+
+  /* 場景UI覆蓋層 */
+  .scene-ui {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 8px;
+    pointer-events: none;
+  }
+
+  .scene-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .pixel-tag {
+    background: #000;
+    border: 2px solid var(--border);
+    padding: 4px 8px;
+    font-size: 10px;
+    color: var(--gold2);
+  }
+
+  .resource-bar {
+    display: flex;
+    gap: 8px;
+  }
+
+  .res-item {
+    background: #000;
+    border: 2px solid #3a2010;
+    padding: 3px 8px;
+    font-size: 9px;
+    color: #e0c080;
+  }
+
+  .res-item span { color: var(--jade); }
+
+  .scene-bottombar {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+  }
+
+  .action-btn {
+    background: #1c0c00;
+    border: 2px solid var(--border);
+    color: var(--gold2);
+    font-family: var(--pixel);
+    font-size: 9px;
+    padding: 4px 10px;
+    cursor: pointer;
+    image-rendering: pixelated;
+    box-shadow: 2px 2px 0 #000;
+  }
+
+  .action-btn:hover {
+    background: #3a1c00;
+    border-color: var(--gold);
+  }
+
+  /* ========== 技術棧標籤 ========== */
+  .tech-stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 16px 0;
+    justify-content: center;
+  }
+
+  .tech-badge {
+    background: #000;
+    border: 2px solid var(--border);
+    padding: 4px 12px;
+    font-size: 10px;
+    color: var(--gold2);
+    letter-spacing: 1px;
+    box-shadow: 2px 2px 0 #000;
+    position: relative;
+  }
+
+  .tech-badge::before {
+    content: '▶ ';
+    color: var(--jade);
+    font-size: 8px;
+  }
+
+  /* ========== 步驟區 ========== */
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 16px 0;
+  }
+
+  .step {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 10px 12px;
+  }
+
+  .step-num {
+    min-width: 24px;
+    height: 24px;
+    background: var(--gold);
+    color: #000;
+    font-size: 10px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 2px 2px 0 #000;
+  }
+
+  .step-content { font-size: 11px; line-height: 1.8; }
+  .step-title { color: var(--gold2); font-size: 12px; margin-bottom: 4px; }
+  .step-desc { color: #8a6030; }
+
+  /* ========== 登入畫面預覽 ========== */
+  .login-preview {
+    background: #040208;
+    border: 3px solid var(--border);
+    box-shadow: 4px 4px 0 #000;
+    padding: 24px;
+    text-align: center;
+    margin: 24px 0;
+  }
+
+  .login-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 20px;
+    color: var(--gold2);
+    letter-spacing: 4px;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 0 #000;
+  }
+
+  .pixel-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-width: 240px;
+    margin: 0 auto 16px;
+  }
+
+  .pixel-label {
+    font-size: 10px;
+    color: var(--gold);
+    text-align: left;
+    letter-spacing: 2px;
+  }
+
+  .pixel-input {
+    background: #080400;
+    border: 2px solid var(--border);
+    color: var(--gold2);
+    font-family: var(--pixel);
+    font-size: 11px;
+    padding: 6px 10px;
+    outline: none;
+    width: 100%;
+    box-shadow: inset 2px 2px 0 #000;
+  }
+
+  .pixel-input:focus {
+    border-color: var(--gold);
+  }
+
+  .pixel-btn {
+    background: #3a1c00;
+    border: 2px solid var(--gold);
+    color: var(--gold2);
+    font-family: var(--pixel);
+    font-size: 11px;
+    padding: 8px 24px;
+    cursor: pointer;
+    letter-spacing: 2px;
+    box-shadow: 3px 3px 0 #000;
+    transition: none;
+    margin-top: 4px;
+  }
+
+  .pixel-btn:hover {
+    background: var(--gold);
+    color: #000;
+  }
+
+  .pixel-btn:active {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 #000;
+  }
+
+  .login-note {
+    font-size: 9px;
+    color: #4a3020;
+    margin-top: 12px;
+    letter-spacing: 1px;
+  }
+
+  /* 閃爍游標 */
+  .blink {
+    animation: blink 1s steps(1) infinite;
+  }
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  /* footer */
+  .footer {
+    text-align: center;
+    font-size: 9px;
+    color: #3a2010;
+    padding: 24px 0 8px;
+    letter-spacing: 2px;
+  }
+
+  /* ========== Firebase Auth 真實功能區 ========== */
+  .auth-section {
+    margin: 24px 0;
+  }
+
+  .auth-tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: -3px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .auth-tab {
+    background: #0d0800;
+    border: 3px solid var(--border);
+    border-bottom: none;
+    color: #5a3a10;
+    font-family: var(--pixel);
+    font-size: 10px;
+    padding: 6px 18px;
+    cursor: pointer;
+    letter-spacing: 2px;
+  }
+
+  .auth-tab.active {
+    background: var(--panel);
+    color: var(--gold2);
+    border-color: var(--gold);
+  }
+
+  .auth-box {
+    padding: 24px;
+    border: 3px solid var(--gold);
+    background: var(--panel);
+    box-shadow: 4px 4px 0 #000;
+  }
+
+  .auth-form { display: none; }
+  .auth-form.active { display: block; }
+
+  .auth-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 12px;
+    max-width: 280px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .auth-hint {
+    font-size: 9px;
+    color: #4a3020;
+    margin-top: 4px;
+    letter-spacing: 1px;
+  }
+
+  /* 訊息提示 */
+  .auth-msg {
+    font-size: 10px;
+    padding: 6px 10px;
+    margin: 8px auto;
+    max-width: 280px;
+    display: none;
+    letter-spacing: 1px;
+  }
+
+  .auth-msg.error {
+    display: block;
+    border: 2px solid #c03030;
+    color: #ff8080;
+    background: #1a0000;
+  }
+
+  .auth-msg.success {
+    display: block;
+    border: 2px solid var(--jade);
+    color: #80ff80;
+    background: #001a00;
+  }
+
+  .auth-msg.loading {
+    display: block;
+    border: 2px solid var(--border);
+    color: var(--gold2);
+    background: #0d0800;
+  }
+
+  /* 登入後畫面 */
+  .logged-in-box {
+    display: none;
+    padding: 24px;
+    text-align: center;
+    border: 3px solid var(--jade);
+    background: var(--panel);
+    box-shadow: 4px 4px 0 #000;
+  }
+
+  .logged-in-box.active { display: block; }
+
+  .player-avatar {
+    width: 48px;
+    height: 48px;
+    background: #1a3a18;
+    border: 3px solid var(--jade);
+    margin: 0 auto 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    box-shadow: 2px 2px 0 #000;
+    image-rendering: pixelated;
+  }
+
+  .player-name {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 18px;
+    color: var(--gold2);
+    letter-spacing: 4px;
+    margin-bottom: 4px;
+  }
+
+  .player-email {
+    font-size: 9px;
+    color: #4a3020;
+    margin-bottom: 16px;
+    letter-spacing: 1px;
+  }
+
+  .player-stats {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .stat-box {
+    background: #080400;
+    border: 2px solid var(--border);
+    padding: 6px 12px;
+    font-size: 9px;
+    text-align: center;
+  }
+
+  .stat-val {
+    display: block;
+    font-size: 16px;
+    color: var(--jade);
+    margin-top: 2px;
+  }
+
+  /* Firebase 設定區 */
+  .firebase-config-box {
+    background: #040200;
+    border: 2px solid #2a1800;
+    padding: 16px;
+    margin: 16px 0;
+    font-size: 10px;
+  }
+
+  .config-title {
+    color: var(--gold);
+    font-size: 11px;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+  }
+
+  .config-field {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+
+  .config-label {
+    color: #5a4020;
+    min-width: 120px;
+    font-size: 9px;
+  }
+
+  .config-input {
+    background: #080400;
+    border: 2px solid #2a1800;
+    color: #8ab080;
+    font-family: var(--pixel);
+    font-size: 9px;
+    padding: 3px 8px;
+    flex: 1;
+    outline: none;
+  }
+
+  .config-input:focus { border-color: var(--gold); }
+
+  .config-note {
+    font-size: 9px;
+    color: #3a2010;
+    margin-top: 10px;
+    line-height: 1.8;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- 標題 -->
+  <div class="title-section">
+    <div class="game-title">玄　門　傳</div>
+    <div class="game-subtitle">XUAN MEN CHUAN — PIXEL XIANXIA SIM</div>
+  </div>
+
+  <div class="pixel-divider"></div>
+
+  <!-- 技術棧 -->
+  <div class="tech-stack">
+    <div class="tech-badge">Vite 5</div>
+    <div class="tech-badge">Phaser 3</div>
+    <div class="tech-badge">Firebase Auth</div>
+    <div class="tech-badge">Firestore</div>
+    <div class="tech-badge">32×32 Pixel</div>
+    <div class="tech-badge">俯視45°</div>
+  </div>
+
+  <div class="pixel-divider"></div>
+
+  <!-- 場景預覽 -->
+  <div class="scene-preview">
+    <div class="panel-title" style="font-size:11px;color:var(--gold);letter-spacing:3px;margin-bottom:8px;">▌ 主地圖場景預覽</div>
+    <div class="scene-canvas">
+      <!-- 像素地圖 -->
+      <div class="pixel-map" id="pixelMap"></div>
+      <!-- UI層 -->
+      <div class="scene-ui">
+        <div class="scene-topbar">
+          <div class="pixel-tag">⚔ 青雲門 Lv.1</div>
+          <div class="resource-bar">
+            <div class="res-item">靈石 <span>128</span></div>
+            <div class="res-item">弟子 <span>3</span></div>
+            <div class="res-item">聲望 <span>45</span></div>
+          </div>
+        </div>
+        <div class="scene-bottombar">
+          <button class="action-btn">🏛 建造</button>
+          <button class="action-btn">⚔ 征戰</button>
+          <button class="action-btn">👥 弟子</button>
+          <button class="action-btn">⛏ 採礦</button>
+          <button class="action-btn">💬 NPC</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 2: Firebase Auth 真實功能 -->
+  <div class="auth-section">
+    <div class="panel-title" style="font-size:11px;color:var(--gold);letter-spacing:3px;margin-bottom:8px;">▌ STEP 2 — Firebase Auth 帳號系統</div>
+
+    <!-- Firebase 已內嵌 -->
+    <div class="firebase-config-box">
+      <div class="config-title">⚙ Firebase 設定</div>
+      <div style="font-size:10px;color:#4adf80;margin:8px 0;">✓ 已內嵌 — xuan-men-chuan.firebaseapp.com</div>
+      <div id="firebaseStatus" class="config-note">⏳ 連線中...</div>
+    </div>
+
+    <!-- 登入/註冊 Tab -->
+    <div id="authPanel" style="display:none;">
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tabLogin" onclick="switchTab('login')">▶ 登入</button>
+        <button class="auth-tab" id="tabRegister" onclick="switchTab('register')">✦ 註冊</button>
+      </div>
+      <div class="auth-box">
+
+        <!-- 登入表單 -->
+        <div class="auth-form active" id="formLogin">
+          <div class="auth-row">
+            <div class="pixel-label">道號 / EMAIL</div>
+            <input class="pixel-input" id="loginEmail" type="email" placeholder="輸入道號..." />
+          </div>
+          <div class="auth-row">
+            <div class="pixel-label">密語 / PASSWORD</div>
+            <input class="pixel-input" id="loginPassword" type="password" placeholder="••••••••" />
+          </div>
+          <div class="auth-msg" id="loginMsg"></div>
+          <div style="text-align:center;margin-top:8px;">
+            <button class="pixel-btn" onclick="doLogin()">▶ 登入仙途</button>
+          </div>
+        </div>
+
+        <!-- 註冊表單 -->
+        <div class="auth-form" id="formRegister">
+          <div class="auth-row">
+            <div class="pixel-label">道號 / EMAIL</div>
+            <input class="pixel-input" id="regEmail" type="email" placeholder="輸入道號..." />
+          </div>
+          <div class="auth-row">
+            <div class="pixel-label">門派名號</div>
+            <input class="pixel-input" id="regName" type="text" placeholder="如：青雲門、太虛閣..." />
+            <div class="auth-hint">此為你的門派名稱，日後可見</div>
+          </div>
+          <div class="auth-row">
+            <div class="pixel-label">密語 / PASSWORD</div>
+            <input class="pixel-input" id="regPassword" type="password" placeholder="至少6位" />
+          </div>
+          <div class="auth-row">
+            <div class="pixel-label">確認密語</div>
+            <input class="pixel-input" id="regPassword2" type="password" placeholder="再輸一次" />
+          </div>
+          <div class="auth-msg" id="registerMsg"></div>
+          <div style="text-align:center;margin-top:8px;">
+            <button class="pixel-btn" style="background:#0a1a0a;border-color:var(--jade);color:#8ae090;" onclick="doRegister()">✦ 創立門派</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 登入後畫面 -->
+    <div class="logged-in-box" id="loggedInBox">
+      <div class="player-avatar">⚔</div>
+      <div class="player-name" id="displayName">青雲門</div>
+      <div class="player-email" id="displayEmail">—</div>
+      <div class="player-stats">
+        <div class="stat-box">靈石<span class="stat-val">0</span></div>
+        <div class="stat-box">弟子<span class="stat-val">0</span></div>
+        <div class="stat-box">門派等級<span class="stat-val">1</span></div>
+      </div>
+      <div style="display:flex;gap:8px;justify-content:center;">
+        <button class="pixel-btn" style="font-size:10px;padding:6px 16px;">▶ 進入遊戲</button>
+        <button class="pixel-btn" style="background:#1a0000;border-color:#c03030;color:#ff8080;font-size:10px;padding:6px 16px;" onclick="doLogout()">✕ 登出</button>
+      </div>
+      <div class="auth-msg" id="logoutMsg" style="margin-top:10px;"></div>
+    </div>
+
+  </div>
+
+  <!-- 專案結構 + 指令 -->
+  <div class="structure-grid">
+    <div class="panel pixel-border">
+      <div class="panel-title">▌ 專案結構</div>
+      <div class="file-tree">
+        <div class="folder">📁 xuan-men-chuan/</div>
+        <div class="file">index.html</div>
+        <div class="file">vite.config.js</div>
+        <div class="file">firebase.json</div>
+        <div class="folder" style="padding-left:8px;">📁 src/</div>
+        <div class="file" style="padding-left:16px;">main.js</div>
+        <div class="folder" style="padding-left:16px;">📁 scenes/</div>
+        <div class="file" style="padding-left:24px;">LoginScene.js</div>
+        <div class="file" style="padding-left:24px;">MapScene.js</div>
+        <div class="file" style="padding-left:24px;">BattleScene.js</div>
+        <div class="file" style="padding-left:24px;">DialogScene.js</div>
+        <div class="folder" style="padding-left:16px;">📁 systems/</div>
+        <div class="file" style="padding-left:24px;">AuthSystem.js</div>
+        <div class="file" style="padding-left:24px;">SaveSystem.js</div>
+        <div class="file" style="padding-left:24px;">BuildSystem.js</div>
+        <div class="file" style="padding-left:24px;">ResourceSystem.js</div>
+        <div class="folder" style="padding-left:16px;">📁 assets/</div>
+        <div class="file" style="padding-left:24px;">tiles/ sprites/ ui/ audio/</div>
+      </div>
+    </div>
+
+    <div class="panel pixel-border">
+      <div class="panel-title">▌ 初始化指令</div>
+      <div class="cmd-block">
+        <div class="cmd-comment"># 1. 建立專案</div>
+        <div class="cmd-line">npm create vite@latest xuan-men-chuan</div>
+        <div class="cmd-comment"># 選 Vanilla + JavaScript</div>
+        <br>
+        <div class="cmd-comment"># 2. 安裝依賴</div>
+        <div class="cmd-line">cd xuan-men-chuan</div>
+        <div class="cmd-line">npm install phaser</div>
+        <div class="cmd-line">npm install firebase</div>
+        <br>
+        <div class="cmd-comment"># 3. 啟動開發</div>
+        <div class="cmd-line">npm run dev</div>
+        <br>
+        <div class="cmd-comment"># 4. 部署</div>
+        <div class="cmd-line">npm install -g firebase-tools</div>
+        <div class="cmd-line">firebase login</div>
+        <div class="cmd-line">firebase deploy</div>
+      </div>
+      <div style="font-size:9px;color:#4a3020;margin-top:8px;">
+        ✓ Node.js 18+ 需先安裝<br>
+        ✓ Firebase 免費方案 Spark Plan<br>
+        ✓ 部署後全球 CDN 免費托管
+      </div>
+    </div>
+  </div>
+
+  <!-- 開發步驟 -->
+  <div class="panel-title" style="font-size:11px;color:var(--gold);letter-spacing:3px;margin:24px 0 8px;">▌ 開發路線圖</div>
+  <div class="steps">
+    <div class="step pixel-border">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <div class="step-title">✅ 現在 — Vite + Phaser 3 初始化</div>
+        <div class="step-desc">專案結構、依賴安裝、main.js 場景管理器</div>
+      </div>
+    </div>
+    <div class="step pixel-border">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <div class="step-title">Firebase Auth — 帳號登入登出</div>
+        <div class="step-desc">Email/密碼註冊、登入、登出、狀態監聽</div>
+      </div>
+    </div>
+    <div class="step pixel-border">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <div class="step-title">主地圖場景 — 45度 Tilemap</div>
+        <div class="step-desc">Tiled 編輯器 + Phaser Tilemap，仙山地形渲染</div>
+      </div>
+    </div>
+    <div class="step pixel-border">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <div class="step-title">建造系統 + 靈石資源</div>
+        <div class="step-desc">建築放置、升級、靈石採集計時器</div>
+      </div>
+    </div>
+    <div class="step pixel-border">
+      <div class="step-num">5</div>
+      <div class="step-content">
+        <div class="step-title">弟子 + 戰鬥 + NPC對話</div>
+        <div class="step-desc">弟子養成、回合制戰鬥、像素對話框</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pixel-divider"></div>
+  <div class="footer">STEP 2 / 5 — 玄門傳 PIXEL XIANXIA SIM © 2025<span class="blink">_</span></div>
+
+</div>
+
+<!-- Firebase CDN（相容所有瀏覽器，無需 ES Module） -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script>
+// =============================================
+// Firebase Auth System — 玄門傳
+// 設定直接內嵌，無需手動填寫
+// =============================================
+const firebaseConfig = {
+  apiKey:     "AIzaSyDw9hW8h2WWSz5ix6q1rWtyimPDhjngMOk",
+  authDomain: "xuan-men-chuan.firebaseapp.com",
+  projectId:  "xuan-men-chuan"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+
+// ── 錯誤訊息中文化 ──
+const errorMap = {
+  'auth/email-already-in-use':   '⚠ 此道號已被他人佔用',
+  'auth/invalid-email':          '⚠ 道號格式不正確',
+  'auth/weak-password':          '⚠ 密語至少需要6個字元',
+  'auth/user-not-found':         '⚠ 查無此道號',
+  'auth/wrong-password':         '⚠ 密語錯誤',
+  'auth/invalid-credential':     '⚠ 道號或密語錯誤',
+  'auth/too-many-requests':      '⚠ 嘗試次數過多，請稍後再試',
+  'auth/network-request-failed': '⚠ 網路連線異常',
+};
+
+function getErrMsg(code) {
+  return errorMap[code] || ('⚠ 錯誤：' + code);
+}
+
+function showMsg(id, text, type) {
+  const el = document.getElementById(id);
+  el.textContent = text;
+  el.className = 'auth-msg ' + type;
+}
+
+// ── Tab 切換 ──
+function switchTab(tab) {
+  document.getElementById('formLogin').classList.toggle('active', tab === 'login');
+  document.getElementById('formRegister').classList.toggle('active', tab === 'register');
+  document.getElementById('tabLogin').classList.toggle('active', tab === 'login');
+  document.getElementById('tabRegister').classList.toggle('active', tab === 'register');
+}
+
+// ── 監聽登入狀態（頁面載入自動執行）──
+auth.onAuthStateChanged(function(user) {
+  document.getElementById('firebaseStatus').textContent = '✓ Firebase 連線成功';
+  document.getElementById('firebaseStatus').style.color = '#4adf80';
+  if (user) {
+    showLoggedIn(user);
+  } else {
+    document.getElementById('authPanel').style.display = 'block';
+    document.getElementById('loggedInBox').classList.remove('active');
+  }
+});
+
+// ── 顯示登入後畫面 ──
+function showLoggedIn(user) {
+  document.getElementById('authPanel').style.display = 'none';
+  document.getElementById('loggedInBox').classList.add('active');
+  document.getElementById('displayName').textContent =
+    user.displayName || '無名修士';
+  document.getElementById('displayEmail').textContent = user.email;
+}
+
+// ── 登入 ──
+function doLogin() {
+  const email    = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  if (!email || !password) {
+    showMsg('loginMsg', '⚠ 請填入道號與密語', 'error'); return;
+  }
+  showMsg('loginMsg', '⏳ 驗證中...', 'loading');
+  auth.signInWithEmailAndPassword(email, password)
+    .then(function() {
+      showMsg('loginMsg', '✓ 登入成功，開啟仙途！', 'success');
+    })
+    .catch(function(e) {
+      showMsg('loginMsg', getErrMsg(e.code), 'error');
+    });
+}
+
+// ── 註冊 ──
+function doRegister() {
+  const email = document.getElementById('regEmail').value.trim();
+  const name  = document.getElementById('regName').value.trim();
+  const pass  = document.getElementById('regPassword').value;
+  const pass2 = document.getElementById('regPassword2').value;
+
+  if (!email || !name || !pass) {
+    showMsg('registerMsg', '⚠ 請填寫所有欄位', 'error'); return;
+  }
+  if (pass !== pass2) {
+    showMsg('registerMsg', '⚠ 兩次密語不一致', 'error'); return;
+  }
+  if (pass.length < 6) {
+    showMsg('registerMsg', '⚠ 密語至少需要6個字元', 'error'); return;
+  }
+
+  showMsg('registerMsg', '⏳ 創立門派中...', 'loading');
+  auth.createUserWithEmailAndPassword(email, pass)
+    .then(function(cred) {
+      return cred.user.updateProfile({ displayName: name });
+    })
+    .then(function() {
+      showMsg('registerMsg', '✓ 門派已創立！歡迎，' + name, 'success');
+    })
+    .catch(function(e) {
+      showMsg('registerMsg', getErrMsg(e.code), 'error');
+    });
+}
+
+// ── 登出 ──
+function doLogout() {
+  auth.signOut()
+    .then(function() {
+      showMsg('logoutMsg', '✓ 已登出，願道途長遠', 'success');
+      setTimeout(function() {
+        document.getElementById('logoutMsg').style.display = 'none';
+      }, 2000);
+    })
+    .catch(function() {
+      showMsg('logoutMsg', '⚠ 登出失敗', 'error');
+    });
+}
+</script>
+const tiles = ['tile-grass','tile-grass','tile-grass','tile-stone','tile-stone',
+               'tile-water','tile-water','tile-path','tile-path','tile-build',
+               'tile-dark','tile-dark','tile-cloud','tile-grass','tile-stone'];
+
+const map = document.getElementById('pixelMap');
+// 20列 × 11行 = 220 tiles
+const rows = 11, cols = 20;
+const layout = [
+  [1,1,1,1,2,2,1,1,3,3,3,1,1,1,2,2,1,1,1,1],
+  [1,4,4,1,2,2,1,3,3,7,3,3,1,1,2,2,1,4,4,1],
+  [1,4,4,1,1,1,3,3,7,7,7,3,3,1,1,1,1,4,4,1],
+  [1,1,1,5,5,3,3,7,7,6,7,7,3,5,5,1,1,1,1,1],
+  [2,2,1,5,5,3,7,7,6,6,6,7,7,5,5,1,2,2,1,1],
+  [2,2,1,1,3,3,7,6,6,8,6,6,7,3,1,1,2,2,1,1],
+  [1,1,1,5,5,3,7,7,6,6,6,7,7,5,5,1,1,1,1,1],
+  [1,4,1,5,5,3,3,7,7,6,7,7,3,5,5,1,4,4,1,1],
+  [1,4,1,1,1,1,3,3,7,7,7,3,3,1,1,1,4,4,1,1],
+  [1,1,1,1,2,2,1,1,3,3,3,1,1,2,2,1,1,1,1,1],
+  [1,1,1,1,2,2,1,1,1,1,1,1,2,2,1,1,1,1,1,1],
+];
+const tileMap = {
+  1:'tile-grass', 2:'tile-water', 3:'tile-stone',
+  4:'tile-build', 5:'tile-path', 6:'tile-dark',
+  7:'tile-cloud', 8:'tile-stone'
+};
+for(let r=0;r<rows;r++){
+  for(let c=0;c<cols;c++){
+    const d = document.createElement('div');
+    d.className = 'tile ' + (tileMap[layout[r][c]] || 'tile-grass');
+    map.appendChild(d);
+  }
+}
+</script>
+</body>
+</html>
